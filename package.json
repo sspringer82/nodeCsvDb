@@ -15,12 +15,15 @@
     "database"
   ],
   "author": {
-      "name": "Sebastian Springer",
-      "email": "sebastian.springer@mayflower.de"
+    "name": "Sebastian Springer",
+    "email": "sebastian.springer@mayflower.de"
   },
   "license": "BSD-2-Clause",
   "bugs": {
     "url": "https://github.com/sspringer82/nodeCsvDb/issues"
   },
-  "homepage": "https://github.com/sspringer82/nodeCsvDb"
+  "homepage": "https://github.com/sspringer82/nodeCsvDb",
+  "dependencies": {
+    "q": "~1.0.0"
+  }
 }
