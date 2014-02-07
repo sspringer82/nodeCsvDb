@@ -1,3 +1,7 @@
 .idea
 .DS_Store
 node_modules
+test/data/create.txt
+test/data/delete.txt
+test/data/update.txt
+test/data/write.txt
