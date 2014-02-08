@@ -14,25 +14,38 @@ var file = {
 var columns = ['id', 'name', 'password'];
 
 
+var copyFile = function (src, dest) {
+    fs.createReadStream(src).pipe(fs.createWriteStream(dest));
+};
+
+var deleteFile = function (fileName) {
+    if (fs.exists(fileName)) {
+        fs.unlinkSync(fileName);
+    }
+};
+
 describe('CsvDb', function () {
     var csvDb;
 
-    beforeEach(function () {
-        csvDb = new CsvDb(file.source, columns);
-    });
+    describe("instanciate", function () {
 
+        beforeEach(function () {
+            csvDb = new CsvDb(file.source, columns);
+        });
 
-    it ("should instanciate with a filename as argument", function () {
-        expect(csvDb.file).to.be(file.source);
-    });
+        it ("should instanciate with a filename as argument", function () {
+            expect(csvDb.file).to.be(file.source);
+        });
 
-    it ("should instanciate with a filename and field names as arguments", function () {
-        var csvDb = new CsvDb(file.source, ['column']);
-        expect(csvDb.file).to.be(file.source);
-        expect(csvDb.fields).to.eql(['column']);
+        it ("should instanciate with a filename and field names as arguments", function () {
+            var csvDb = new CsvDb(file.source, ['column']);
+            expect(csvDb.file).to.be(file.source);
+            expect(csvDb.fields).to.eql(['column']);
+        });
     });
 
     describe ("read", function () {
+
         beforeEach(function () {
             csvDb = new CsvDb(file.read, columns);
         });
@@ -145,11 +158,9 @@ describe('CsvDb', function () {
 
     describe("create", function () {
 
-        // @todo delete file
         beforeEach(function () {
-            if (fs.exists(file.create)) {
-                fs.unlinkSync(file.create);
-            }
+            deleteFile(file.create);
+
             csvDb = new CsvDb(file.create, columns);
         });
 
@@ -171,12 +182,7 @@ describe('CsvDb', function () {
         });
 
         it ("should get the next id of a file with content", function (done) {
-
-            // @todo copy file
-            var inputFile = file.source;
-            var outputFile = file.create;
-
-            fs.createReadStream(inputFile).pipe(fs.createWriteStream(outputFile));
+            copyFile(file.source, file.create);
 
             var promise = csvDb.getNextId();
 
@@ -234,12 +240,7 @@ describe('CsvDb', function () {
         });
 
         it ("should append a new data set to an existing file", function (done) {
-
-            //@todo copy file
-            var inputFile = file.source;
-            var outputFile = file.create;
-
-            fs.createReadStream(inputFile).pipe(fs.createWriteStream(outputFile));
+            copyFile(file.source, file.create);
 
             var data = {
                 name: 'foo',
@@ -265,11 +266,9 @@ describe('CsvDb', function () {
     });
 
     describe("write", function () {
+
         beforeEach(function () {
-            // @todo delete file
-            if (fs.exists(file.write)) {
-                fs.unlinkSync(file.write);
-            }
+            deleteFile(file.write);
 
             csvDb = new CsvDb(file.write, columns);
         });
@@ -291,17 +290,12 @@ describe('CsvDb', function () {
                 done(err);
             });
         });
-
     });
 
     describe("update", function () {
 
         beforeEach(function () {
-            // @todo copy file
-            var inputFile = file.source;
-            var outputFile = file.update;
-
-            fs.createReadStream(inputFile).pipe(fs.createWriteStream(outputFile));
+            copyFile(file.source, file.update);
 
             csvDb = new CsvDb(file.update, columns);
         });
@@ -336,11 +330,7 @@ describe('CsvDb', function () {
     describe("delete", function () {
 
         beforeEach(function () {
-            // @todo copy file
-            var inputFile = file.source;
-            var outputFile = file.delete;
-
-            fs.createReadStream(inputFile).pipe(fs.createWriteStream(outputFile));
+            copyFile(file.source, file.delete);
 
             csvDb = new CsvDb(file.delete, columns);
         });
