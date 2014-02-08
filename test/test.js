@@ -275,14 +275,14 @@ describe('CsvDb', function () {
         });
 
         it ("should write the content of a new file", function (done) {
-            var data = '1;lala;lulu;\n2;foo;meme;';
+            var expected = '1;lala;lulu;\n2;foo;meme;';
 
-            var promise = csvDb.write(data);
+            var promise = csvDb.write(expected);
 
             promise.then(function () {
                 try {
                     var content = fs.readFileSync(file.write, 'utf-8');
-                    expect(content).to.eql(data);
+                    expect(content).to.eql(expected);
                     done();
                 } catch (e) {
                     done(e);
@@ -306,8 +306,8 @@ describe('CsvDb', function () {
             csvDb = new CsvDb(file.update, columns);
         });
 
-        it ("should update a certain data set in an existing file", function () {
-            var expectedFileContent = '1;lala;lulu;\n2;foo;meme;2';
+        it ("should update a certain data set in an existing file", function (done) {
+            var expectedFileContent = '1;lala;lulu;\n2;foo;meme;';
 
             var data = {
                 name: 'foo',
@@ -322,6 +322,7 @@ describe('CsvDb', function () {
                     var fileContent = fs.readFileSync(file.update, 'utf-8');
 
                     expect(fileContent).to.eql(expectedFileContent);
+
                     done();
                 } catch (e) {
                     done(e);
@@ -356,6 +357,8 @@ describe('CsvDb', function () {
                 } catch (e) {
                     done(e);
                 }
+            }, function (err) {
+                done(err);
             });
 
         });
