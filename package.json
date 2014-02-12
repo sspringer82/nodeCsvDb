@@ -1,5 +1,5 @@
 {
-  "name": "nodeCsvDb",
+  "name": "csv-db",
   "version": "0.0.0",
   "description": "Simple filebased database",
   "main": "index.js",
