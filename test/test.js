@@ -225,8 +225,10 @@ describe('CsvDb', function () {
 
             var promise = csvDb.insert(data);
 
-            promise.then(function () {
+            promise.then(function (id) {
                 try {
+                    expect(id).to.be(1);
+
                     var fileContent = fs.readFileSync(file.create, 'utf-8');
 
                     expect(fileContent).to.eql(expectedFileContent);
@@ -250,8 +252,10 @@ describe('CsvDb', function () {
 
             var promise = csvDb.insert(data);
 
-            promise.then(function () {
+            promise.then(function (id) {
                 try {
+                    expect(id).to.be(3);
+
                     var fileContent = fs.readFileSync(file.create, 'utf-8');
 
                     expect(fileContent).to.eql(expectedFileContent);
