@@ -7,6 +7,8 @@ The first version of the database implementation was completely synchronous wher
 heavily relies on promises.
 
 # API
+## CsvDb(filename, columns)
+Create a file handle to access the database
 ## get(id)
 Read either all data of a certain file or just one data set. The output is an array containing
 one or more objects, depending on what was fetched.
