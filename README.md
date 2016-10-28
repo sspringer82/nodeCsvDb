@@ -10,6 +10,8 @@ heavily relies on promises.
 `npm install csv-db`
 
 # API
+## CsvDb(filename, columns)
+Create a file handle to access the database
 ## get(id)
 Read either all data of a certain file or just one data set. The output is an array containing
 one or more objects, depending on what was fetched.
