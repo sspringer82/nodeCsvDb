@@ -6,6 +6,9 @@ and the fields are separated by semicolons.
 The first version of the database implementation was completely synchronous whereas the current version
 heavily relies on promises.
 
+# Installation
+`npm install csv-db`
+
 # API
 ## get(id)
 Read either all data of a certain file or just one data set. The output is an array containing
