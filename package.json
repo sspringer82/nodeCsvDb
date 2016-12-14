@@ -23,9 +23,6 @@
     "url": "https://github.com/sspringer82/nodeCsvDb/issues"
   },
   "homepage": "https://github.com/sspringer82/nodeCsvDb",
-  "dependencies": {
-    "q": "~1.0.0"
-  },
   "devDependencies": {
     "expect.js": "~0.2.0",
     "mocha": "^3.2.0"
