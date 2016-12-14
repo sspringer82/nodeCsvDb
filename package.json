@@ -4,7 +4,7 @@
   "description": "Simple filebased database",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node_modules/.bin/mocha"
   },
   "repository": {
     "type": "git",
@@ -16,7 +16,7 @@
   ],
   "author": {
     "name": "Sebastian Springer",
-    "email": "sebastian.springer@mayflower.de"
+    "email": "info@sebastian-springer.com"
   },
   "license": "BSD-2-Clause",
   "bugs": {
@@ -24,7 +24,10 @@
   },
   "homepage": "https://github.com/sspringer82/nodeCsvDb",
   "dependencies": {
-    "q": "~1.0.0",
-    "expect.js": "~0.2.0"
+    "q": "~1.0.0"
+  },
+  "devDependencies": {
+    "expect.js": "~0.2.0",
+    "mocha": "^3.2.0"
   }
 }
