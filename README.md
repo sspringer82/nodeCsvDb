@@ -9,6 +9,26 @@ heavily relies on promises.
 # Installation
 `npm install csv-db`
 
+# Usage
+Given a file named input.csv of the following format (columns ID, username and password):
+
+```
+1;admin;secret;
+```
+
+##Initialization:
+```
+const csvDb = new CsvDb('input.csv', ['id', 'username', 'password']);
+```
+##Usage:
+```
+csvDb.get().then((data) => {
+  console.log(data);
+}, (err) => {
+  console.log(err);
+});
+```
+
 # API
 ## CsvDb(filename, columns)
 Create a file handle to access the database
