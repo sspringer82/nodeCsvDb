@@ -27,30 +27,30 @@ var deleteFile = function (fileName) {
 describe('CsvDb', function () {
     var csvDb;
 
-    describe("instanciate", function () {
+    describe('instanciate', function () {
 
         beforeEach(function () {
             csvDb = new CsvDb(file.source, columns);
         });
 
-        it ("should instanciate with a filename as argument", function () {
+        it ('should instanciate with a filename as argument', function () {
             expect(csvDb.file).to.be(file.source);
         });
 
-        it ("should instanciate with a filename and field names as arguments", function () {
+        it ('should instanciate with a filename and field names as arguments', function () {
             var csvDb = new CsvDb(file.source, ['column']);
             expect(csvDb.file).to.be(file.source);
             expect(csvDb.fields).to.eql(['column']);
         });
     });
 
-    describe ("read", function () {
+    describe ('read', function () {
 
         beforeEach(function () {
             csvDb = new CsvDb(file.read, columns);
         });
 
-        it ("should read the contents of the file", function (done) {
+        it ('should read the contents of the file', function (done) {
             var promise = csvDb.getFileContent();
 
             promise.then(function (data) {
@@ -65,7 +65,7 @@ describe('CsvDb', function () {
             });
         });
 
-        it ("should make an object out of a text block", function () {
+        it ('should make an object out of a text block', function () {
             var input = '1;lala;lulu;\n2;mumu;meme;';
             var expected = [{
                 id: 1,
@@ -80,14 +80,14 @@ describe('CsvDb', function () {
             expect(csvDb.transform(input)).to.eql(expected);
         });
 
-        it ("should transform an empty input", function () {
+        it ('should transform an empty input', function () {
             var input = '';
             var expected = [];
 
             expect(csvDb.transform(input)).to.eql(expected);
         });
 
-        it ("should get all contents of the specified file and return an object structure", function (done) {
+        it ('should get all contents of the specified file and return an object structure', function (done) {
             var expected = [{
                 id: 1,
                 name: 'lala',
@@ -112,7 +112,7 @@ describe('CsvDb', function () {
             });
         });
 
-        it ("should get a specified set of data", function (done) {
+        it ('should get a specified set of data', function (done) {
             var expected = {
                 id: 2,
                 name: 'mumu',
@@ -133,7 +133,7 @@ describe('CsvDb', function () {
             });
         });
 
-        it ("should fetch a single row out of a rowset", function () {
+        it ('should fetch a single row out of a rowset', function () {
             var input = [{
                 id: 1,
                 name: 'lala',
@@ -156,7 +156,7 @@ describe('CsvDb', function () {
         });
     });
 
-    describe("create", function () {
+    describe('create', function () {
 
         beforeEach(function () {
             deleteFile(file.create);
@@ -164,7 +164,7 @@ describe('CsvDb', function () {
             csvDb = new CsvDb(file.create, columns);
         });
 
-        it ("should get the next id of an empty file", function (done) {
+        it ('should get the next id of an empty file', function (done) {
             fs.writeFileSync(file.create, '');
 
             var promise = csvDb.getNextId();
@@ -181,7 +181,7 @@ describe('CsvDb', function () {
             });
         });
 
-        it ("should get the next id of a file with content", function (done) {
+        it ('should get the next id of a file with content', function (done) {
             copyFile(file.source, file.create);
 
             var promise = csvDb.getNextId();
@@ -198,7 +198,7 @@ describe('CsvDb', function () {
             });
         });
 
-        it ("should transform an array-object structure to a valid string", function () {
+        it ('should transform an array-object structure to a valid string', function () {
             var input = [{
                 id: 1,
                 name: 'lala',
@@ -215,7 +215,7 @@ describe('CsvDb', function () {
             expect(output).to.eql(expected);
         });
 
-        it ("should insert a new data set in an empty file", function (done) {
+        it ('should insert a new data set in an empty file', function (done) {
             fs.writeFileSync(file.create, '');
             var data = {
                 name: 'foo',
@@ -241,7 +241,7 @@ describe('CsvDb', function () {
             });
         });
 
-        it ("should append a new data set to an existing file", function (done) {
+        it ('should append a new data set to an existing file', function (done) {
             copyFile(file.source, file.create);
 
             var data = {
@@ -269,7 +269,7 @@ describe('CsvDb', function () {
         });
     });
 
-    describe("write", function () {
+    describe('write', function () {
 
         beforeEach(function () {
             deleteFile(file.write);
@@ -277,7 +277,7 @@ describe('CsvDb', function () {
             csvDb = new CsvDb(file.write, columns);
         });
 
-        it ("should write the content of a new file", function (done) {
+        it ('should write the content of a new file', function (done) {
             var expected = '1;lala;lulu;\n2;foo;meme;';
 
             var promise = csvDb.write(expected);
@@ -296,7 +296,7 @@ describe('CsvDb', function () {
         });
     });
 
-    describe("update", function () {
+    describe('update', function () {
 
         beforeEach(function () {
             copyFile(file.source, file.update);
@@ -304,10 +304,11 @@ describe('CsvDb', function () {
             csvDb = new CsvDb(file.update, columns);
         });
 
-        it ("should update a certain data set in an existing file", function (done) {
+        it ('should update a certain data set in an existing file', function (done) {
             var expectedFileContent = '1;lala;lulu;\n2;foo;meme;';
 
             var data = {
+                id: '2',
                 name: 'foo',
                 password: 'meme'
             };
@@ -331,7 +332,7 @@ describe('CsvDb', function () {
         });
     });
 
-    describe("delete", function () {
+    describe('delete', function () {
 
         beforeEach(function () {
             copyFile(file.source, file.delete);
@@ -339,7 +340,7 @@ describe('CsvDb', function () {
             csvDb = new CsvDb(file.delete, columns);
         });
 
-        it ("should delete a certain dataset", function (done) {
+        it ('should delete a certain dataset', function (done) {
             var expected = '1;lala;lulu;';
 
             csvDb.delete(2).then(function () {
