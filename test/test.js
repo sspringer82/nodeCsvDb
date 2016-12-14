@@ -13,12 +13,12 @@ var file = {
 
 var columns = ['id', 'name', 'password'];
 
-
-var copyFile = function (src, dest) {
+function copyFile (src, dest) {
+    deleteFile(dest);
     fs.createReadStream(src).pipe(fs.createWriteStream(dest));
 };
 
-var deleteFile = function (fileName) {
+function deleteFile (fileName) {
     if (fs.exists(fileName)) {
         fs.unlinkSync(fileName);
     }
@@ -312,10 +312,8 @@ describe('CsvDb', function () {
                 name: 'foo',
                 password: 'meme'
             };
-            var id = 2;
 
-
-            var promise = csvDb.update(data, id);
+            var promise = csvDb.update(data);
             promise.then(function () {
                 try {
                     var fileContent = fs.readFileSync(file.update, 'utf-8');
@@ -328,6 +326,27 @@ describe('CsvDb', function () {
                 }
             }, function (err) {
                 done(err);
+            });
+        });
+
+        it('should update multiple datasets at once', function (done) {
+            var expectedFileContent = '1;abc;abc;\n2;def;def;';
+            const data = [
+                {id: '1', name: 'abc', password: 'abc'},
+                {id: '2', name: 'def', password: 'def'}
+            ];
+            csvDb.update(data).then(() => {
+                try {
+                    var fileContent = fs.readFileSync(file.update, 'utf-8');
+
+                    expect(fileContent).to.eql(expectedFileContent);
+
+                    done();
+                } catch (e) {
+                    done(e);
+                }
+            }, () => {
+                done();
             });
         });
     });
