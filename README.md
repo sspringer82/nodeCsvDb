@@ -18,6 +18,7 @@ Given a file named input.csv of the following format (columns ID, username and p
 
 ##Initialization:
 ```
+const CsvDb = require('csv-db');
 const csvDb = new CsvDb('input.csv', ['id', 'username', 'password']);
 ```
 ##Usage:
@@ -35,9 +36,53 @@ Create a file handle to access the database
 ## get(id)
 Read either all data of a certain file or just one data set. The output is an array containing
 one or more objects, depending on what was fetched.
+
+```
+csvDb.get().then((data) => {
+  console.log(data);
+}, (err) => {
+  console.log(err);
+});
+```
+
 ## insert(newData)
 Insert a new row to the database. Data is an object with column names as keys and the values to be inserted as - the values.
+
+```
+const user = {
+  name: 'basti',
+  secret: 'topSecret'
+};
+csvDb.insert(user).then((data) => {
+  console.log(data);
+}, (err) => {
+  console.log(err);
+});
+```
+
 ## update(data, id)
 Update an existing row. Data is an object containing ALL the values excluding the id. id is the identifier of the row to be updated.
+
+```
+const user = {
+  id: 2,
+  name: 'basti',
+  secret: 'topSecret'
+};
+csvDb.update(user, 2).then((data) => {
+  console.log(data);
+}, (err) => {
+  console.log(err);
+});
+```
+
 ## delete(id)
 Delete an existing row. id is the identifier of the row to be deleted.
+
+```
+csvDb.delete(2).then((data) => {
+  console.log(data);
+}, (err) => {
+  console.log(err);
+});
+```
