@@ -21,6 +21,9 @@ Given a file named input.csv of the following format (columns ID, username and p
 const CsvDb = require('csv-db');
 const csvDb = new CsvDb('input.csv', ['id', 'username', 'password']);
 ```
+
+If you omit the second argument of the constructor, the property names will be read from the first line
+
 ##Usage:
 ```
 csvDb.get().then((data) => {
