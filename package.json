@@ -1,6 +1,6 @@
 {
   "name": "csv-db",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Simple filebased database",
   "main": "index.js",
   "scripts": {
@@ -10,10 +10,7 @@
     "type": "git",
     "url": "git://github.com/sspringer82/nodeCsvDb.git"
   },
-  "keywords": [
-    "csv",
-    "database"
-  ],
+  "keywords": ["csv", "database"],
   "author": {
     "name": "Sebastian Springer",
     "email": "info@sebastian-springer.com"
