@@ -305,35 +305,6 @@ describe('CsvDb', () => {
     });
   });
 
-  describe('write', () => {
-    beforeEach(() => {
-      deleteFile(file.write);
-
-      csvDb = new CsvDb(file.write, columns);
-    });
-
-    it('should write the content of a new file', done => {
-      const expected = '1;lala;lulu;\n2;foo;meme;';
-
-      const promise = csvDb.write(expected);
-
-      promise.then(
-        () => {
-          try {
-            const content = fs.readFileSync(file.write, 'utf-8');
-            expect(content).to.eql(expected);
-            done();
-          } catch (e) {
-            done(e);
-          }
-        },
-        err => {
-          done(err);
-        },
-      );
-    });
-  });
-
   describe('update', () => {
     beforeEach(() => {
       copyFile(file.source, file.update);
