@@ -4,6 +4,7 @@ var fs = require('fs');
 
 var file = {
   source: 'test/data/source.txt',
+  sourceWithHeaders: 'test/data/source-with-header.csv',
   create: 'test/data/create.txt',
   read: 'test/data/source.txt',
   write: 'test/data/write.txt',
@@ -26,6 +27,12 @@ function deleteFile(fileName) {
 
 describe('CsvDb', function() {
   var csvDb;
+
+  after(function() {
+    Object.values(file).forEach(function(filename) {
+      deleteFile(filename);
+    });
+  });
 
   describe('instanciate', function() {
     beforeEach(function() {
@@ -146,8 +153,13 @@ describe('CsvDb', function() {
       );
     });
 
-    it('should read data and take column names from first line', function() {
-      const csvDb = new CsvDb(file.read);
+    it('should read data and take column names from first line', function(done) {
+      var expected = [
+        { id: '1', firstname: 'Donald', lastname: 'Duck' },
+        { id: '2', firstname: 'Mickey', lastname: 'Mouse' },
+      ];
+
+      const csvDb = new CsvDb(file.sourceWithHeaders);
       const promise = csvDb.get();
       promise.then(
         function(data) {
