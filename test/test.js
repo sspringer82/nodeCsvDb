@@ -15,8 +15,13 @@ const file = {
 const columns = ['id', 'name', 'password'];
 
 function copyFile(src, dest) {
+  const writeStream = fs.createWriteStream(dest);
   deleteFile(dest);
-  fs.createReadStream(src).pipe(fs.createWriteStream(dest));
+  fs.createReadStream(src).pipe(writeStream);
+  return new Promise((resolve, reject) => {
+    writeStream.on('error', reject);
+    writeStream.on('finish', resolve);
+  });
 }
 
 function deleteFile(fileName) {
@@ -55,22 +60,9 @@ describe('CsvDb', () => {
       csvDb = new CsvDb(file.read, columns);
     });
 
-    it('should read the contents of the file', done => {
-      const promise = csvDb.getFileContent();
-
-      promise.then(
-        data => {
-          try {
-            expect(data).to.equal('1;lala;lulu;\n2;mumu;meme;');
-            done();
-          } catch (e) {
-            done(e);
-          }
-        },
-        err => {
-          done(err);
-        },
-      );
+    it('should read the contents of the file', async () => {
+      const data = await csvDb.getFileContent();
+      expect(data).to.equal('1;lala;lulu;\n2;mumu;meme;');
     });
 
     it('should make an object out of a text block', () => {
@@ -98,7 +90,7 @@ describe('CsvDb', () => {
       expect(csvDb.transform(input)).to.eql(expected);
     });
 
-    it('should get all contents of the specified file and return an object structure', done => {
+    it('should get all contents of the specified file and return an object structure', async () => {
       const expected = [
         {
           id: 1,
@@ -112,116 +104,56 @@ describe('CsvDb', () => {
         },
       ];
 
-      const promise = csvDb.get();
+      const data = await csvDb.get();
 
-      promise.then(
-        data => {
-          try {
-            expect(data).to.eql(expected);
-            done();
-          } catch (e) {
-            done(e);
-          }
-        },
-        err => {
-          done(err);
-        },
-      );
+      expect(data).to.eql(expected);
     });
 
-    it('should get a specified set of data', done => {
+    it('should get a specified set of data', async () => {
       const expected = {
         id: '2',
         name: 'mumu',
         password: 'meme',
       };
 
-      const promise = csvDb.get(2);
+      const data = await csvDb.get(2);
 
-      promise.then(
-        data => {
-          try {
-            expect(data).to.eql(expected);
-            done();
-          } catch (e) {
-            done(e);
-          }
-        },
-        err => {
-          done(err);
-        },
-      );
+      expect(data).to.eql(expected);
     });
 
-    it('should read data and take column names from first line', function(done) {
+    it('should read data and take column names from first line', async () => {
       const expected = [
         { id: '1', firstname: 'Donald', lastname: 'Duck' },
         { id: '2', firstname: 'Mickey', lastname: 'Mouse' },
       ];
 
       const csvDb = new CsvDb(file.sourceWithHeaders);
-      const promise = csvDb.get();
-      promise.then(
-        function(data) {
-          try {
-            expect(data).to.eql(expected);
-            done();
-          } catch (e) {
-            done(e);
-          }
-        },
-        function(err) {
-          done(err);
-        },
-      );
+      const data = await csvDb.get();
+
+      expect(data).to.eql(expected);
     });
   });
 
   describe('create', () => {
     beforeEach(() => {
       deleteFile(file.create);
-
       csvDb = new CsvDb(file.create, columns);
     });
 
-    it('should get the next id of an empty file', done => {
+    it('should get the next id of an empty file', async () => {
       fs.writeFileSync(file.create, '');
 
-      const promise = csvDb.getNextId();
+      const id = await csvDb.getNextId();
 
-      promise.then(
-        id => {
-          try {
-            expect(id).to.eql(1);
-            done();
-          } catch (e) {
-            done(e);
-          }
-        },
-        err => {
-          done(err);
-        },
-      );
+      expect(id).to.eql(1);
     });
 
-    it('should get the next id of a file with content', done => {
-      copyFile(file.source, file.create);
+    it('should get the next id of a file with content', async () => {
+      await copyFile(file.source, file.create);
 
-      const promise = csvDb.getNextId();
+      const id = await csvDb.getNextId();
 
-      promise.then(
-        id => {
-          try {
-            expect(id).to.eql(3);
-            done();
-          } catch (e) {
-            done(e);
-          }
-        },
-        err => {
-          done(err);
-        },
-      );
+      expect(id).to.eql(3);
     });
 
     it('should transform an array-object structure to a valid string', () => {
@@ -244,7 +176,7 @@ describe('CsvDb', () => {
       expect(output).to.eql(expected);
     });
 
-    it('should insert a new data set in an empty file', done => {
+    it('should insert a new data set in an empty file', async () => {
       fs.writeFileSync(file.create, '');
       const data = {
         name: 'foo',
@@ -252,29 +184,17 @@ describe('CsvDb', () => {
       };
       const expectedFileContent = 'name;password;id;\nfoo;bar;1;';
 
-      const promise = csvDb.insert(data);
+      const id = await csvDb.insert(data);
 
-      promise.then(
-        id => {
-          try {
-            expect(id).to.be(1);
+      expect(id).to.be(1);
 
-            const fileContent = fs.readFileSync(file.create, 'utf-8');
+      const fileContent = fs.readFileSync(file.create, 'utf-8');
 
-            expect(fileContent).to.eql(expectedFileContent);
-            done();
-          } catch (e) {
-            done(e);
-          }
-        },
-        err => {
-          done(err);
-        },
-      );
+      expect(fileContent).to.eql(expectedFileContent);
     });
 
-    it('should append a new data set to an existing file', done => {
-      copyFile(file.source, file.create);
+    it('should append a new data set to an existing file', async () => {
+      await copyFile(file.source, file.create);
 
       const data = {
         name: 'foo',
@@ -283,36 +203,21 @@ describe('CsvDb', () => {
       const expectedFileContent =
         'id;name;password;\n1;lala;lulu;\n2;mumu;meme;\n3;foo;bar;';
 
-      const promise = csvDb.insert(data);
+      const id = await csvDb.insert(data);
+      const fileContent = fs.readFileSync(file.create, 'utf-8');
 
-      promise.then(
-        id => {
-          try {
-            expect(id).to.be(3);
-
-            const fileContent = fs.readFileSync(file.create, 'utf-8');
-
-            expect(fileContent).to.eql(expectedFileContent);
-            done();
-          } catch (e) {
-            done(e);
-          }
-        },
-        err => {
-          done(err);
-        },
-      );
+      expect(id).to.be(3);
+      expect(fileContent).to.eql(expectedFileContent);
     });
   });
 
   describe('update', () => {
-    beforeEach(() => {
-      copyFile(file.source, file.update);
-
+    beforeEach(async () => {
+      await copyFile(file.source, file.update);
       csvDb = new CsvDb(file.update, columns);
     });
 
-    it('should update a certain data set in an existing file', done => {
+    it('should update a certain data set in an existing file', async () => {
       const expectedFileContent =
         'id;name;password;\n1;lala;lulu;\n2;foo;meme;';
 
@@ -322,75 +227,39 @@ describe('CsvDb', () => {
         password: 'meme',
       };
 
-      const promise = csvDb.update(data);
-      promise.then(
-        () => {
-          try {
-            const fileContent = fs.readFileSync(file.update, 'utf-8');
+      await csvDb.update(data);
+      const fileContent = fs.readFileSync(file.update, 'utf-8');
 
-            expect(fileContent).to.eql(expectedFileContent);
-
-            done();
-          } catch (e) {
-            done(e);
-          }
-        },
-        err => {
-          done(err);
-        },
-      );
+      expect(fileContent).to.eql(expectedFileContent);
     });
 
-    it('should update multiple datasets at once', done => {
+    it('should update multiple datasets at once', async () => {
       const expectedFileContent = 'id;name;password;\n1;abc;abc;\n2;def;def;';
       const data = [
         { id: '1', name: 'abc', password: 'abc' },
         { id: '2', name: 'def', password: 'def' },
       ];
-      csvDb.update(data).then(
-        () => {
-          try {
-            const fileContent = fs.readFileSync(file.update, 'utf-8');
+      await csvDb.update(data);
+      const fileContent = fs.readFileSync(file.update, 'utf-8');
 
-            expect(fileContent).to.eql(expectedFileContent);
-
-            done();
-          } catch (e) {
-            done(e);
-          }
-        },
-        () => {
-          done();
-        },
-      );
+      expect(fileContent).to.eql(expectedFileContent);
     });
   });
 
   describe('delete', () => {
-    beforeEach(() => {
-      copyFile(file.source, file.delete);
+    beforeEach(async () => {
+      await copyFile(file.source, file.delete);
 
       csvDb = new CsvDb(file.delete, columns);
     });
 
-    it('should delete a certain dataset', done => {
+    it('should delete a certain dataset', async () => {
       const expected = 'id;name;password;\n1;lala;lulu;';
 
-      csvDb.delete(2).then(
-        () => {
-          try {
-            const fileContent = fs.readFileSync(file.delete, 'utf-8');
+      await csvDb.delete(2);
+      const fileContent = fs.readFileSync(file.delete, 'utf-8');
 
-            expect(fileContent).to.eql(expected);
-            done();
-          } catch (e) {
-            done(e);
-          }
-        },
-        err => {
-          done(err);
-        },
-      );
+      expect(fileContent).to.eql(expected);
     });
   });
 });
