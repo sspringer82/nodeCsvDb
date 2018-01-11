@@ -262,4 +262,40 @@ describe('CsvDb', () => {
       expect(fileContent).to.eql(expected);
     });
   });
+
+  describe('write file', () => {
+    it('should write an existing file', async () => {
+      await copyFile(file.source, file.write);
+      csvDb = new CsvDb(file.write, columns);
+      await csvDb.writeFile(file.write, 'test');
+      const expected = 'test';
+      const fileContent = fs.readFileSync(file.write, 'utf-8');
+      expect(fileContent).to.eql(expected);
+    });
+    it('should create a new file', () => {});
+    it('should fail if configured to fail and file does not exist', () => {});
+    it('should not fail if configured to fail and file does exist', () => {});
+  });
+
+  describe('file exists', () => {
+    it.skip('should create a new file, if it does not exist', async () => {
+      const tempName = 'test/data/temp.csv';
+      const csvDb = new CsvDb(tempName, columns);
+
+      const data = {
+        name: 'foo',
+        password: 'bar',
+      };
+      const expectedFileContent = 'name;password;id;\nfoo;bar;1;';
+
+      const id = await csvDb.insert(data);
+
+      expect(id).to.be(1);
+
+      const fileContent = fs.readFileSync(tempName, 'utf-8');
+
+      expect(fileContent).to.eql(expectedFileContent);
+      deleteFile(tempName);
+    });
+  });
 });
