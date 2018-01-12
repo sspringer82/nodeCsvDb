@@ -15,17 +15,12 @@ const file = {
 const columns = ['id', 'name', 'password'];
 
 function copyFile(src, dest) {
-  const writeStream = fs.createWriteStream(dest);
   deleteFile(dest);
-  fs.createReadStream(src).pipe(writeStream);
-  return new Promise((resolve, reject) => {
-    writeStream.on('error', reject);
-    writeStream.on('finish', resolve);
-  });
+  fs.copyFileSync(src, dest);
 }
 
 function deleteFile(fileName) {
-  if (fs.exists(fileName)) {
+  if (fs.existsSync(fileName)) {
     fs.unlinkSync(fileName);
   }
 }
@@ -34,9 +29,15 @@ describe('CsvDb', () => {
   let csvDb;
 
   after(() => {
-    Object.values(file).forEach(filename => {
-      deleteFile(filename);
-    });
+    Object.keys(file)
+      .filter(
+        key =>
+          key !== 'source' && key !== 'sourceWithHeaders' && key !== 'read',
+      )
+      .forEach(fileKey => {
+        console.log(fileKey);
+        deleteFile(file[fileKey]);
+      });
   });
 
   describe('instanciate', () => {
@@ -213,8 +214,12 @@ describe('CsvDb', () => {
 
   describe('update', () => {
     beforeEach(async () => {
-      await copyFile(file.source, file.update);
       csvDb = new CsvDb(file.update, columns);
+      await copyFile(file.source, file.update);
+    });
+
+    afterEach(() => {
+      deleteFile(file.update);
     });
 
     it('should update a certain data set in an existing file', async () => {
@@ -239,6 +244,7 @@ describe('CsvDb', () => {
         { id: '1', name: 'abc', password: 'abc' },
         { id: '2', name: 'def', password: 'def' },
       ];
+
       await csvDb.update(data);
       const fileContent = fs.readFileSync(file.update, 'utf-8');
 
@@ -272,7 +278,14 @@ describe('CsvDb', () => {
       const fileContent = fs.readFileSync(file.write, 'utf-8');
       expect(fileContent).to.eql(expected);
     });
-    it('should create a new file', () => {});
+    it('should create a new file', async () => {
+      deleteFile(file.write);
+      csvDb = new CsvDb(file.write, columns);
+      await csvDb.writeFile(file.write, 'test');
+      const expected = 'test';
+      const fileContent = fs.readFileSync(file.write, 'utf-8');
+      expect(fileContent).to.eql(expected);
+    });
     it('should fail if configured to fail and file does not exist', () => {});
     it('should not fail if configured to fail and file does exist', () => {});
   });
