@@ -35,7 +35,6 @@ describe('CsvDb', () => {
           key !== 'source' && key !== 'sourceWithHeaders' && key !== 'read',
       )
       .forEach(fileKey => {
-        console.log(fileKey);
         deleteFile(file[fileKey]);
       });
   });
@@ -286,7 +285,18 @@ describe('CsvDb', () => {
       const fileContent = fs.readFileSync(file.write, 'utf-8');
       expect(fileContent).to.eql(expected);
     });
-    it('should fail if configured to fail and file does not exist', () => {});
+    it('should fail if configured to fail and file does not exist', done => {
+      deleteFile(file.write);
+      csvDb = new CsvDb(file.write, columns, { failIfNotExists: true });
+
+      csvDb.writeFile(file.write, 'test').then(
+        () => done(false),
+        e => {
+          expect(e instanceof Error).to.eql(true);
+          done();
+        },
+      );
+    });
     it('should not fail if configured to fail and file does exist', () => {});
   });
 
