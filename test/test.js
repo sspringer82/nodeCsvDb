@@ -297,7 +297,14 @@ describe('CsvDb', () => {
         },
       );
     });
-    it('should not fail if configured to fail and file does exist', () => {});
+    it('should not fail if configured to fail and file does exist', async () => {
+      await copyFile(file.source, file.write);
+      csvDb = new CsvDb(file.write, columns);
+      await csvDb.writeFile(file.write, 'test');
+      const expected = 'test';
+      const fileContent = fs.readFileSync(file.write, 'utf-8');
+      expect(fileContent).to.eql(expected);
+    });
   });
 
   describe('file exists', () => {
